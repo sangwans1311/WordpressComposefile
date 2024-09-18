@@ -1,0 +1,42 @@
+version: '3.8'  # Specify the version of the Docker Compose file format
+
+services:
+  db:
+    image: mysql:8.0.27
+    command: '--default-authentication-plugin=mysql_native_password'
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=somewordpress
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    expose:
+      - 3306
+      - 33060
+    networks:
+      - wordpress_network
+
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - 80:80
+    restart: always
+    volumes:
+      - wordpress_data:/var/www/html
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+    networks:
+      - wordpress_network
+
+volumes:
+  db_data: {}
+  wordpress_data: {}
+
+networks:
+  wordpress_network:
+    driver: bridge  # You can specify a different driver if needed
